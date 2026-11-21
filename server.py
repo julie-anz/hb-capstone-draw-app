@@ -266,7 +266,7 @@ def save_new_artwork():
 def delete_portfolio(pId):
     """Commit deletion of portfolio to database."""
 
-   if not get_own_portfolio(pId):
+    if not get_own_portfolio(pId):
         return NOT_FOUND
 
     crud_p.delete_portfolio_by_id(int(pId))
@@ -280,7 +280,7 @@ def delete_portfolio(pId):
 def update_portfolio_title(pId):
     """Commit updated portfolio title to database."""
 
-   if not get_own_portfolio(pId):
+    if not get_own_portfolio(pId):
         return NOT_FOUND
 
     new_title = request.json.get('title')
@@ -349,7 +349,7 @@ def get_all_user_artworks():
 def get_portfolio_artworks(pId):
     """Return list of all artworks from one portfolio."""
 
-   if not get_own_portfolio(pId):
+    if not get_own_portfolio(pId):
         return NOT_FOUND
 
     artworks = crud_a.get_all_artworks_by_portfolio_id(portfolio_id=pId)
@@ -404,7 +404,7 @@ def delete_artwork(aId):
 def update_artwork_title(aId, pId):
     """ Commit updated artwork title to database."""
 
-   if not get_own_artwork(aId) or not get_own_portfolio(pId):
+    if not get_own_artwork(aId) or not get_own_portfolio(pId):
         return NOT_FOUND
     
     title = request.json.get('title')
@@ -436,7 +436,7 @@ def update_artwork_portfolio(aId):
 def update_artwork_newly_created_portfolio(aId):
     """Return new pId for new updated artwork porfolio."""
 
-   if not get_own_artwork(aId):
+    if not get_own_artwork(aId):
         return NOT_FOUND
 
     p_title = request.json.get('pTitle')
