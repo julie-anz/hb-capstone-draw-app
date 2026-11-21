@@ -1,7 +1,7 @@
 """Script to seed database."""
 
 from random import choice
-import hashlib
+from werkzeug.security import generate_password_hash
 import os
 
 import crud_a
@@ -20,7 +20,7 @@ p_ids = [1, 2, 3, 4, 5]
 
 # Create a user
 
-hashed = hashlib.sha256('password'.encode()).hexdigest()
+hashed = generate_password_hash('password')
 
 user = crud_u.create_user(username="smelly cat",
                           email="user1@gmail.com",
