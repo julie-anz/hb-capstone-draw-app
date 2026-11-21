@@ -14,27 +14,26 @@ import crud_u, crud_p, crud_a
 
 
 app = Flask(__name__)
-app.secret_key = "dev"   #for development only, change for production/deployment
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev")   # set FLASK_SECRET_KEY for production/deployment
 app.jinja_env.undefined = StrictUndefined
 
 # Set up key and accessibility to S3 bucket
 S3_KEY_ID = os.environ.get("S3_KEY_ID")  #IAM user access key ID
 S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY") #IAM  user secret access key
 
-boto3.set_stream_logger('botocore', level='DEBUG')
+#boto3.set_stream_logger('botocore', level='DEBUG')
+bucket_name = os.environ.get("S3_BUCKET_NAME", "artworks-images") #name of S3 bucket
    
 s3 = boto3.resource('s3', 
                     aws_access_key_id=S3_KEY_ID,  
                     aws_secret_access_key=S3_SECRET_KEY
                     )
 
-artwork_bucket = s3.Bucket(name='artworks-images') #name of S3 bucket
+artwork_bucket = s3.Bucket(name=bucket_name)
 
 s3_client = boto3.client('s3', 
                     aws_access_key_id=S3_KEY_ID,  
                     aws_secret_access_key=S3_SECRET_KEY)
-
-bucket_name = 'artworks-images' #name of S3 bucket
 
 
 # Helper function to create new portfolio 
@@ -141,7 +140,7 @@ def logout():
 def create_account():
     """View signup form."""
 
-    return render_template("signup.html")
+    return render_template("signup.html", error=None)
 
 
 @app.route("/create-user", methods=['POST'])
@@ -151,6 +150,11 @@ def create_user():
     username = request.form.get("username")
     email = request.form.get("email")
     password = request.form.get("password")
+
+    # reject dupe account with existing email
+    if crud_u.get_user_by_email(email):
+        error = "An account with that email already exists, please log in instead"
+        return render_template("signup.html", error=error)
 
     # hash password (salted, slow hash for passwords)
     hashed = generate_password_hash(password)
