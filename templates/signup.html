@@ -31,4 +31,8 @@
 
 </form>
 
+{% if error %}
+<p id="err-msg"> {{ error }} </p>
+{% endif %}
+
 {% endblock %}
