@@ -220,7 +220,10 @@ def save_new_artwork():
     new_portfolio_title = request.json.get("new-portfolio-title")
     base64_artwork_str = request.json.get('artwork-dataURL').split('base64,')[1] #remove prefix
 
-    
+    # existing portfolio must belong to user
+    if existing_portfolio_id and not get_own_portfolio(existing_portfolio_id):
+        return NOT_FOUND
+
     # Get the portfolio relevant portfolio id based on user selection 
     # id of existing portfolio or the newly created portfolio)
     # (helper fn def at top of file)
@@ -256,6 +259,9 @@ def save_new_artwork():
 def delete_portfolio(pId):
     """Commit deletion of portfolio to database."""
 
+   if not get_own_portfolio(pId):
+        return NOT_FOUND
+
     crud_p.delete_portfolio_by_id(int(pId))
     db.session.commit()
 
@@ -266,6 +272,9 @@ def delete_portfolio(pId):
 @login_required
 def update_portfolio_title(pId):
     """Commit updated portfolio title to database."""
+
+   if not get_own_portfolio(pId):
+        return NOT_FOUND
 
     new_title = request.json.get('title')
 
@@ -333,6 +342,9 @@ def get_all_user_artworks():
 def get_portfolio_artworks(pId):
     """Return list of all artworks from one portfolio."""
 
+   if not get_own_portfolio(pId):
+        return NOT_FOUND
+
     artworks = crud_a.get_all_artworks_by_portfolio_id(portfolio_id=pId)
 
     all_artworks: list = []
@@ -360,25 +372,33 @@ def get_portfolio_artworks(pId):
 @app.route('/api/delete-artwork/<aId>', methods=['POST'])
 @login_required
 def delete_artwork(aId):
-     """Commit deletion of artwork to database."""
+    """Commit deletion of artwork to database."""
 
-     path = request.json.get('path')
+    # path = request.json.get('path')
+    artwork = get_own_artwork(aId)
+    if not artwork:
+        return NOT_FOUND
 
-     crud_a.delete_artwork_by_id(int(aId))
-     db.session.commit()
+    key = artwork.file_path.split('.s3.amazonaws.com/')[1]
 
-     #delete object from S3
-     key = path[41:]    
-     s3_client.delete_object(Bucket=bucket_name,
+    crud_a.delete_artwork_by_id(int(aId))
+    db.session.commit()
+
+    #delete object from S3
+    # key = path[41:]    
+    s3_client.delete_object(Bucket=bucket_name,
                                         Key=key)
 
-     return {"status": "success"}
+    return {"status": "success"}
 
 
 @app.route('/api/update-artwork-title/<aId>/<pId>', methods=['POST'])
 @login_required
 def update_artwork_title(aId, pId):
     """ Commit updated artwork title to database."""
+
+   if not get_own_artwork(aId) or not get_own_portfolio(pId):
+        return NOT_FOUND
     
     title = request.json.get('title')
 
@@ -394,6 +414,10 @@ def update_artwork_portfolio(aId):
     """Commit updated artwork portfolio to database."""
     
     pId = request.json.get('pId')
+
+    if not get_own_artwork(aId) or not get_own_portfolio(pId):
+        return NOT_FOUND
+       
     crud_a.update_artwork_by_id(artwork_id=aId, portfolio_id=pId)
                                                 
     db.session.commit()
@@ -404,6 +428,9 @@ def update_artwork_portfolio(aId):
 @login_required
 def update_artwork_newly_created_portfolio(aId):
     """Return new pId for new updated artwork porfolio."""
+
+   if not get_own_artwork(aId):
+        return NOT_FOUND
 
     p_title = request.json.get('pTitle')
 
