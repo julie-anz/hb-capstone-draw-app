@@ -61,6 +61,14 @@ python3 server.py
 
 You can now navigate to 'localhost:5000' to access ARTwrks
 
+### Running tests
+```
+pip3 install -r requirements-dev.txt
+createdb artworks_test
+pytest
+```
+Tests use a separate database and a mocked S3 bucket, so no AWS credentials are needed.
+
 ***
 
 ### Features
