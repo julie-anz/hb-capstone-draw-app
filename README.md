@@ -44,11 +44,9 @@ Create a <kbd>secret.sh</kbd> file to store your IAM user access key ID and secr
 ```
 export S3_KEY_ID='your_access_key_ID'
 export S3_SECRET_KEY='your_secret_access_key'
+export S3_BUCKET_NAME='your_bucket_name'
 ```
 
-
-
-In <kbd>server.py</kbd>, replace the name of the S3 bucket with your S3 bucket name, on lines 30 and 36.
 
 Seed the postgresql database:
 ```
