@@ -8,6 +8,7 @@ import os
 import re
 import uuid
 import base64
+from functools import wraps
 from model import connect_to_db, db
 import crud_u, crud_p, crud_a 
 
@@ -56,6 +57,42 @@ def get_new_portfolio_id(new_portfolio_title):
 def checkIsLoggedIn():
     if session.get('user_id', 0) == 0:
         return False
+
+
+def login_required(view):
+    """Refuse API requests from users who aren't logged in."""
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if 'user_id' not in session:
+            return {'status': 'error', 'message': 'Please log in'}, 401
+        return view(*args, **kwargs)
+    return wrapped
+
+
+# returned when a portfolio/artwork doesn't exist or belongs to someone else
+NOT_FOUND = ({'status': 'error', 'message': 'Not found'}, 404)
+
+
+def get_own_portfolio(portfolio_id):
+    """Return the portfolio if it belongs to the logged-in user, otherwise None."""
+    try:
+        portfolio = crud_p.get_portfolio_by_id(int(portfolio_id))
+    except (TypeError, ValueError):
+        return None
+    if portfolio and portfolio.user_id == session['user_id']:
+        return portfolio
+    return None
+
+
+def get_own_artwork(artwork_id):
+    """Return the artwork if it belongs to the logged-in user, otherwise None."""
+    try:
+        artwork = crud_a.get_artwork_by_id(int(artwork_id))
+    except (TypeError, ValueError):
+        return None
+    if artwork and artwork.portfolio.user_id == session['user_id']:
+        return artwork
+    return None
 
 
 ### routes that return html templates ###
