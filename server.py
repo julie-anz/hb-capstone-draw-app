@@ -186,6 +186,7 @@ def user_page():
 ### routes that return data to fetch requests ###
 
 @app.route("/api/user-portfolio-titles")
+@login_required
 def get_user_portfolio_titles():
     """Return user portfolio titles and corresponding ids."""
 
@@ -208,6 +209,7 @@ def get_user_portfolio_titles():
 
 
 @app.route("/api/save-artwork", methods=['POST'])
+@login_required
 def save_new_artwork():
     """Create new artwork for user and commit to database."""
     
@@ -250,6 +252,7 @@ def save_new_artwork():
 
 
 @app.route('/api/delete-porfolio/<pId>')
+@login_required
 def delete_portfolio(pId):
     """Commit deletion of portfolio to database."""
 
@@ -260,6 +263,7 @@ def delete_portfolio(pId):
 
     
 @app.route('/api/update-portfolio-title/<pId>', methods=['POST'])
+@login_required
 def update_portfolio_title(pId):
     """Commit updated portfolio title to database."""
 
@@ -272,6 +276,7 @@ def update_portfolio_title(pId):
 
 
 @app.route('/api/search-porfolios',  methods=['POST'])
+@login_required
 def get_portfolio_search_results():
     """Return list of matched portfolio titles."""
 
@@ -292,6 +297,7 @@ def get_portfolio_search_results():
 
 
 @app.route('/api/get-user-artworks')
+@login_required
 def get_all_user_artworks():
     """Return list of all user artworks."""
 
@@ -323,6 +329,7 @@ def get_all_user_artworks():
 
 
 @app.route('/api/get-portfolio-artworks/<pId>')
+@login_required
 def get_portfolio_artworks(pId):
     """Return list of all artworks from one portfolio."""
 
@@ -351,6 +358,7 @@ def get_portfolio_artworks(pId):
 
 
 @app.route('/api/delete-artwork/<aId>', methods=['POST'])
+@login_required
 def delete_artwork(aId):
      """Commit deletion of artwork to database."""
 
@@ -368,6 +376,7 @@ def delete_artwork(aId):
 
 
 @app.route('/api/update-artwork-title/<aId>/<pId>', methods=['POST'])
+@login_required
 def update_artwork_title(aId, pId):
     """ Commit updated artwork title to database."""
     
@@ -380,6 +389,7 @@ def update_artwork_title(aId, pId):
 
 
 @app.route('/api/update-artwork-portfolio-id/<aId>', methods=['POST'])
+@login_required
 def update_artwork_portfolio(aId):
     """Commit updated artwork portfolio to database."""
     
@@ -391,6 +401,7 @@ def update_artwork_portfolio(aId):
 
 
 @app.route('/api/update-artwork-new-portfolio/<aId>', methods=['POST'])
+@login_required
 def update_artwork_newly_created_portfolio(aId):
     """Return new pId for new updated artwork porfolio."""
 
@@ -405,6 +416,7 @@ def update_artwork_newly_created_portfolio(aId):
 
 
 @app.route('/api/search-artworks',  methods=['POST'])
+@login_required
 def get_artwork_search_results():
     """Return list of matched artwork titles."""
 
