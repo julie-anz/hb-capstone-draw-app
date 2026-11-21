@@ -151,6 +151,11 @@ def create_user():
     email = request.form.get("email")
     password = request.form.get("password")
 
+    if not username or not email or not password:
+        return render_template("signup.html", error="Please fill in all fields")
+    if "@" not in email:
+        return render_template("signup.html", error="Please enter a valid email address")
+
     # reject dupe account with existing email
     if crud_u.get_user_by_email(email):
         error = "An account with that email already exists, please log in instead"
