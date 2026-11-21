@@ -16,7 +16,7 @@ class User(db.Model):
                         primary_key=True)
     username = db.Column(db.String(25),
                          nullable=False)
-    email = db.Column(db.String(25),
+    email = db.Column(db.String(254),
                       unique=True,
                       nullable=False)
     password = db.Column(db.Text,
@@ -35,11 +35,13 @@ class Portfolio(db.Model):
 
     __tablename__ = "portfolios"
 
+    # portfolio titles need to be unique only per user
+    __table_args__ = (db.UniqueConstraint("user_id", "p_title"),)
+
     portfolio_id = db.Column(db.Integer,
                              autoincrement=True,
                              primary_key=True)
     p_title = db.Column(db.String(75),
-                        unique=True,
                         nullable=False)
     user_id = db.Column(db.Integer,
                         db.ForeignKey("users.user_id"),
